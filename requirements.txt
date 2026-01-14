@@ -7,8 +7,9 @@ python-docx
 pdfplumber
 sentence-transformers
 langchain
-pinecone-client
+pinecone
 requests
 python-dotenv
 langchain-community
 langchain_google_genai 
+tenacity
