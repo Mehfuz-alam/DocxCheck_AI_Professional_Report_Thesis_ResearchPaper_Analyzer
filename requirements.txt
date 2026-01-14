@@ -1,0 +1,14 @@
+streamlit
+fastapi
+uvicorn
+python-multipart
+PyPDF2
+python-docx
+pdfplumber
+sentence-transformers
+langchain
+pinecone-client
+requests
+python-dotenv
+langchain-community
+langchain_google_genai 
