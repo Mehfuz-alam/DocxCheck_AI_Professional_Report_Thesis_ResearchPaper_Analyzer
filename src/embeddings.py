@@ -1,18 +1,23 @@
 import os
-from dotenv import load_dotenv
+import streamlit as st
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
-from pinecone.exceptions import NotFoundException # Import this at the top
-import streamlit as st
+from pinecone.exceptions import NotFoundException
 
-load_dotenv()
+# --- STREAMLIT COMPATIBLE CONFIGURATION ---
+# Use st.secrets instead of os.getenv or st.getenv
+try:
+    PINECONE_API_KEY = st.secrets["PINECONE_API_KEY"]
+    PINECONE_ENV = st.secrets["PINECONE_ENV"]
+    PINECONE_INDEX_NAME = st.secrets["PINECONE_INDEX"]
+except KeyError as e:
+    st.error(f"Missing Secret: {e}. Please add it to Streamlit Cloud Settings > Secrets.")
+    st.stop()
 
-PINECONE_API_KEY = st.getenv("PINECONE_API_KEY")
-PINECONE_ENV = st.getenv("PINECONE_ENV", "us-east-1")
-PINECONE_INDEX_NAME = st.getenv("PINECONE_INDEX", "projectprog-index")
-
+# Initialize Pinecone
 pc = Pinecone(api_key=PINECONE_API_KEY)
 
+# Index Initialization logic
 if PINECONE_INDEX_NAME not in [idx.name for idx in pc.list_indexes()]:
     pc.create_index(
         name=PINECONE_INDEX_NAME,
@@ -22,17 +27,21 @@ if PINECONE_INDEX_NAME not in [idx.name for idx in pc.list_indexes()]:
     )
 
 index = pc.Index(PINECONE_INDEX_NAME)
-embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# Use st.cache_resource to load the model once and share it across user sessions
+@st.cache_resource
+def get_embed_model():
+    return SentenceTransformer("all-MiniLM-L6-v2")
+
+embed_model = get_embed_model()
 
 def create_embeddings(doc_folder):
     from src.document_parser import parse_document
     
-    # WRAP THIS IN A TRY-EXCEPT BLOCK
     try:
         index.delete(delete_all=True) 
         print("Existing index cleared.")
     except NotFoundException:
-        # If the namespace doesn't exist, just skip and move to indexing
         print("Index is already empty or namespace not found. Skipping clear.")
     except Exception as e:
         print(f"An unexpected error occurred during clearing: {e}")
