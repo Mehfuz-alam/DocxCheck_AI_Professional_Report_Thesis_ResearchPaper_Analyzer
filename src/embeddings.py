@@ -3,12 +3,13 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 from pinecone.exceptions import NotFoundException # Import this at the top
+import streamlit as st
 
 load_dotenv()
 
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
-PINECONE_ENV = os.getenv("PINECONE_ENV", "us-east-1")
-PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX", "projectprog-index")
+PINECONE_API_KEY = st.getenv("PINECONE_API_KEY")
+PINECONE_ENV = st.getenv("PINECONE_ENV", "us-east-1")
+PINECONE_INDEX_NAME = st.getenv("PINECONE_INDEX", "projectprog-index")
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 

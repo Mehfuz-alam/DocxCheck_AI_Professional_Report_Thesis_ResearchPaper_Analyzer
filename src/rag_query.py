@@ -4,8 +4,9 @@ import re
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+import streamlit as st
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", api_key=os.getenv("GEMINI_API_KEY"))
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", api_key=st.getenv("GEMINI_API_KEY"))
 output_parser = StrOutputParser()
 
 def extract_requirements(guideline_context):
